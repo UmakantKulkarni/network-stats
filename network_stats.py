@@ -297,22 +297,27 @@ if __name__ == "__main__":
     local_network = None
     packet_stats = False
 
-    local_network_list = list()
+    local_networks = set()
     if args.localnet is not None:
-        local_network_list = args_dict['localnet']
+        local_networks = args_dict['localnet']
     elif args.interface is not None:
         afs = socket.getaddrinfo(socket.gethostname(),443,socket.AF_INET)
         for af in afs:
-            local_network_list.append(af[4][0])
-        afs = socket.getaddrinfo(socket.gethostname(),443,socket.AF_INET6)
-        for af in afs:
-            local_network_list.append(af[4][0])
-
-    local_network_addresses = list()
-    for local_network_str in local_network_list:
+            local_networks.add(af[4][0])
+        # Attempting to get address info in the IPv6 address family throws an
+        # error for systems without IPv6 available. In this case we should
+        # catch the error and simply move on.
+        try:
+            afs = socket.getaddrinfo(socket.gethostname(),443,socket.AF_INET6)
+            for af in afs:
+                local_networks.add(af[4][0])
+        except socket.gaierror:
+            pass
+    local_network_addresses = set()
+    for local_network_str in local_networks:
         try:
             local_network = ipaddress.ip_network(local_network_str)
-            local_network_addresses.append(local_network)
+            local_network_addresses.add(local_network)
         except:
             print(local_network_str + " not a valid format for IP address")
             pass
