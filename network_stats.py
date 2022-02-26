@@ -19,6 +19,8 @@ from impacket import ImpactDecoder
 from impacket.ImpactPacket import IP, TCP, UDP
 import socket
 
+ip_proto_table = {num:name[8:] for name,num in vars(socket).items() if name.startswith("IPPROTO")}
+
 def is_ip_in_list(ip, iplist):
         for i in iplist:
             if ip in i:
@@ -138,10 +140,44 @@ def csvfile_out(csvfile):
 
 def init_extfile(extfile):
     """Initilizes csv file by writing the human-readable header"""
-    extfile.write('Time,IP1,Port1,IP2,Port2,Proto,1->2Bytes,2->1Bytes,1->2Pkts,2->1Pkts,packet_times,packet_sizes,packet_dirs\n')
+    #extfile.write('Time,IP1,Port1,IP2,Port2,Proto,1->2Bytes,2->1Bytes,1->2Pkts,2->1Pkts,packet_times,packet_sizes,packet_dirs\n')
+    extfile.write('Time,IP1,Port1,IP2,Port2,Proto,Bytes,Pkts\n')
 
 
 def extended_out(extfile):
+    """Returns a function that will write out connections from a {_ConnectionKey->{key->value}}
+       dictionary (where their keys are the properties of the connection).
+       The function is used as a callback for writing 'buckets'. Note that prior to using that
+       function, the passed in extfile should be initialized with init_extfile.
+    """
+    def csv_cb(bucket_time, bucket):
+        for key in bucket:
+            extfile.write(','.join([
+                str(bucket_time),
+                str(key.ip1),
+                str(key.port1),
+                str(key.ip2),
+                str(key.port2),
+                ip_proto_table[key.proto],
+                str(bucket[key]['1to2Packets']),
+                str(bucket[key]['1to2PacketTimes']),
+                str(bucket[key]['1to2PacketSize']),
+            ]) + "\n")
+            extfile.write(','.join([
+                str(bucket_time),
+                str(key.ip2),
+                str(key.port2),
+                str(key.ip1),
+                str(key.port1),
+                ip_proto_table[key.proto],                
+                str(bucket[key]['2to1Packets']),
+                str(bucket[key]['2to1PacketTimes']),
+                str(bucket[key]['2to1PacketSize']),
+            ]) + "\n")
+    return csv_cb
+
+
+def extended_out_orig(extfile):
     """Returns a function that will write out connections from a {_ConnectionKey->{key->value}}
        dictionary (where their keys are the properties of the connection).
        The function is used as a callback for writing 'buckets'. Note that prior to using that
@@ -252,6 +288,10 @@ def process_pkts(pktreader, output_cb, live, local_network_addresses, packet_sta
                     conn_bucket[key]['packet_times'] = ''
                     conn_bucket[key]['packet_size'] = ''
                     conn_bucket[key]['packet_dir'] = ''
+                    conn_bucket[key]['1to2PacketTimes'] = ''
+                    conn_bucket[key]['1to2PacketSize'] = ''
+                    conn_bucket[key]['2to1PacketTimes'] = ''
+                    conn_bucket[key]['2to1PacketSize'] = ''
             if packet_stats:
                 conn_bucket[key]['packet_times'] += str(int((pktts + pktms/1e6)*1000)) + ';'
                 conn_bucket[key]['packet_size'] += str(ip_len) + ';'
@@ -260,12 +300,16 @@ def process_pkts(pktreader, output_cb, live, local_network_addresses, packet_sta
                 conn_bucket[key]['1to2Bytes'] += ip_len
                 conn_bucket[key]['1to2Packets'] += 1
                 if packet_stats:
+                    conn_bucket[key]['1to2PacketTimes'] += str(int((pktts + pktms/1e6)*1000)) + ','
+                    conn_bucket[key]['1to2PacketSize'] += str(ip_len) + ','
                     conn_bucket[key]['packet_dir'] += "1;"
             elif (key.ip2 == src and key.port2 == sport and key.ip1 == dst and
                   key.port1 == dport and key.proto == prot):
                 conn_bucket[key]['2to1Bytes'] += ip_len
                 conn_bucket[key]['2to1Packets'] += 1
                 if packet_stats:
+                    conn_bucket[key]['2to1PacketTimes'] += str(int((pktts + pktms/1e6)*1000)) + ','
+                    conn_bucket[key]['2to1PacketSize'] += str(ip_len) + ','
                     conn_bucket[key]['packet_dir'] += "2;"
             else:
                 print("Dictionary returned unexpected key. Searched for: src:" + src + " dst: " +
