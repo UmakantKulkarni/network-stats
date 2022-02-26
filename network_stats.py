@@ -304,7 +304,7 @@ def process_pkts(pktreader, output_cb, live, local_network_addresses, packet_sta
                 conn_bucket[key]['1to2Bytes'] += ip_len
                 conn_bucket[key]['1to2Packets'] += 1
                 if packet_stats:
-                    conn_bucket[key]['1to2PacketTimes'] += str(conn_bucket[key]['1to2StartTime'] - ((pktts + pktms/1e6)*1000)) + ','
+                    conn_bucket[key]['1to2PacketTimes'] += str(((pktts + pktms/1e6)*1000) - conn_bucket[key]['1to2StartTime']) + ','
                     conn_bucket[key]['1to2PacketSize'] += str(ip_len) + ','
                     conn_bucket[key]['packet_dir'] += "1;"
             elif (key.ip2 == src and key.port2 == sport and key.ip1 == dst and
@@ -314,7 +314,7 @@ def process_pkts(pktreader, output_cb, live, local_network_addresses, packet_sta
                 conn_bucket[key]['2to1Bytes'] += ip_len
                 conn_bucket[key]['2to1Packets'] += 1
                 if packet_stats:
-                    conn_bucket[key]['2to1PacketTimes'] += str(conn_bucket[key]['2to1StartTime'] - ((pktts + pktms/1e6)*1000)) + ','
+                    conn_bucket[key]['2to1PacketTimes'] += str(((pktts + pktms/1e6)*1000) - conn_bucket[key]['2to1StartTime']) + ','
                     conn_bucket[key]['2to1PacketSize'] += str(ip_len) + ','
                     conn_bucket[key]['packet_dir'] += "2;"
             else:
