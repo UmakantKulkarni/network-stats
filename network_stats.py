@@ -18,6 +18,7 @@ from impacket.IP6 import IP6
 from impacket import ImpactDecoder
 from impacket.ImpactPacket import IP, TCP, UDP
 import socket
+import subprocess
 
 ip_proto_table = {num:name[8:] for name,num in vars(socket).items() if name.startswith("IPPROTO")}
 
@@ -26,6 +27,13 @@ def is_ip_in_list(ip, iplist):
             if ip in i:
                 return True
         return False
+
+def delete_first_lines(filename, line_nums):
+    n = '1,{}d'.format(line_nums)
+    subprocess.Popen(['sed', '-i', n, filename ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+        )
 
 class _ConnectionKey(object):
     """ Represent a unique 5-tuple (src/dst IP/port + protocol) in manner that disregards the order
@@ -404,3 +412,5 @@ if __name__ == "__main__":
         process_pkts(pktreader, multi_out(output_cbs), live, local_network_addresses, packet_stats)
     else:
         print("Error: pktreader not initialized")
+
+    delete_first_lines(args.extcsv.name, 1)
