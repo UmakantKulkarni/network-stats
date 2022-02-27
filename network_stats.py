@@ -19,10 +19,10 @@ from impacket import ImpactDecoder
 from impacket.ImpactPacket import IP, TCP, UDP
 import socket
 import subprocess
-
+import os
 
 filter_ip_addr = True
-ip_addr_dict = {'webex1.pcap':['192.168.0.103', '216.151.154.14', '209.197.222.159', '216.151.154.12', '216.151.158.230', '204.79.197.219']}
+ip_addr_dict = {'webex1.pcap':['192.168.0.103', '216.151.154.14', '209.197.222.159', '216.151.154.12', '216.151.158.230']}
 ip_proto_table = {num:name[8:] for name,num in vars(socket).items() if name.startswith("IPPROTO")}
 
 def is_ip_in_list(ip, iplist):
@@ -155,7 +155,7 @@ def init_extfile(extfile):
     extfile.write('Time,IP1,Port1,IP2,Port2,Proto,Bytes,Pkts\n')
 
 
-def extended_out(extfile):
+def extended_out(extfile, pcap_filename):
     """Returns a function that will write out connections from a {_ConnectionKey->{key->value}}
        dictionary (where their keys are the properties of the connection).
        The function is used as a callback for writing 'buckets'. Note that prior to using that
@@ -164,7 +164,7 @@ def extended_out(extfile):
     def csv_cb(bucket_time, bucket):
         for key in bucket:
             if filter_ip_addr:
-                if bucket[key]['ip1'] in ip_addr_dict[extfile.name] or bucket[key]['ip2'] in ip_addr_dict[extfile.name]:
+                if bucket[key]['ip1'] in ip_addr_dict[pcap_filename] or bucket[key]['ip2'] in ip_addr_dict[pcap_filename]:
                     pass
                 else:
                     continue
@@ -415,7 +415,7 @@ if __name__ == "__main__":
         #Add header to extended csv file
         init_extfile(args.extcsv)
         #extfile_out takes a filename and returns a callback that will write extended csvs to that file
-        output_cbs.append(extended_out(args.extcsv))
+        output_cbs.append(extended_out(args.extcsv), os.path.basename(args_dict['pcap']))
 
 
     if pktreader is not None:
