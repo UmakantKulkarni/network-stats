@@ -20,6 +20,9 @@ from impacket.ImpactPacket import IP, TCP, UDP
 import socket
 import subprocess
 
+
+filter_ip_addr = True
+ip_addr_dict = {'webex1.pcap':['192.168.0.103', '216.151.154.14', '209.197.222.159', '216.151.154.12', '216.151.158.230', '204.79.197.219']}
 ip_proto_table = {num:name[8:] for name,num in vars(socket).items() if name.startswith("IPPROTO")}
 
 def is_ip_in_list(ip, iplist):
@@ -160,6 +163,13 @@ def extended_out(extfile):
     """
     def csv_cb(bucket_time, bucket):
         for key in bucket:
+            if filter_ip_addr:
+                if bucket[key]['ip1'] in ip_addr_dict[extfile.name] or bucket[key]['ip2'] in ip_addr_dict[extfile.name]:
+                    pass
+                else:
+                    continue
+            else:
+                pass
             extfile.write(','.join([
                 str(extfile.name),
                 str(bucket[key]['ip1']),
@@ -413,4 +423,5 @@ if __name__ == "__main__":
     else:
         print("Error: pktreader not initialized")
 
-    delete_first_lines(args.extcsv.name, 1)
+    if filter_ip_addr:
+        delete_first_lines(args.extcsv.name, 1)
