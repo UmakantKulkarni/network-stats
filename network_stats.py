@@ -241,11 +241,11 @@ def process_pkts(pktreader, output_cb, live, local_network_addresses, packet_sta
                 output_cb(bucket_time, conn_bucket)
                 break
         (pktts, pktms) = pktheader.getts()
-        if pktts > bucket_time:
-            if bucket_time != -1:
-                output_cb(bucket_time, conn_bucket)
-            conn_bucket = dict()
-            bucket_time = pktts
+        #if pktts > bucket_time:
+        #    if bucket_time != -1:
+        #        output_cb(bucket_time, conn_bucket)
+        #    conn_bucket = dict()
+        #    bucket_time = pktts
 
         try:
             frame = decoder.decode(pktdata)
