@@ -22,7 +22,7 @@ import subprocess
 import os
 
 filter_ip_addr = True
-ip_addr_dict = {'webex1.pcap':['192.168.0.103', '216.151.154.14', '209.197.222.159', '216.151.154.12', '216.151.158.230']}
+ip_addr_dict = {'webex1.pcap':['216.151.154.14', '209.197.222.159', '216.151.154.12', '216.151.158.230']}
 ip_proto_table = {num:name[8:] for name,num in vars(socket).items() if name.startswith("IPPROTO")}
 
 def is_ip_in_list(ip, iplist):
