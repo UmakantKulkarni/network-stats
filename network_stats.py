@@ -154,11 +154,11 @@ def extended_out(extfile):
         for key in bucket:
             extfile.write(','.join([
                 str(extfile.name),
-                str(key.ip1),
-                str(key.port1),
-                str(key.ip2),
-                str(key.port2),
-                ip_proto_table[int(key.proto)],
+                str(bucket[key]['ip1']),
+                str(bucket[key]['port1']),
+                str(bucket[key]['ip2']),
+                str(bucket[key]['port2']),
+                ip_proto_table[int(bucket[key]['proto'])],
                 str(bucket[key]['1to2StartTime']),
                 str(bucket[key]['1to2Packets']),
                 str(bucket[key]['1to2PacketTimes']),
@@ -166,11 +166,11 @@ def extended_out(extfile):
             ]) + "\n")
             extfile.write(','.join([
                 str(extfile.name),
-                str(key.ip2),
-                str(key.port2),
-                str(key.ip1),
-                str(key.port1),
-                ip_proto_table[key.proto],
+                str(bucket[key]['ip2']),
+                str(bucket[key]['port2']),
+                str(bucket[key]['ip1']),
+                str(bucket[key]['port1']),
+                ip_proto_table[int(bucket[key]['proto'])],
                 str(bucket[key]['2to1StartTime']),
                 str(bucket[key]['2to1Packets']),
                 str(bucket[key]['2to1PacketTimes']),
