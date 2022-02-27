@@ -158,7 +158,7 @@ def extended_out(extfile):
                 str(key.port1),
                 str(key.ip2),
                 str(key.port2),
-                ip_proto_table[key.proto],
+                ip_proto_table[int(key.proto)],
                 str(bucket[key]['1to2StartTime']),
                 str(bucket[key]['1to2Packets']),
                 str(bucket[key]['1to2PacketTimes']),
@@ -284,39 +284,40 @@ def process_pkts(pktreader, output_cb, live, local_network_addresses, packet_sta
                 sport = segment.get_uh_sport()
                 dport = segment.get_uh_dport()
             key = _ConnectionKey(src, sport, dst, dport, prot, local_network_addresses)
-            if key not in conn_bucket:
-                conn_bucket[key] = {'1to2Bytes':0, '2to1Bytes':0, '1to2Packets':0, '2to1Packets':0, '1to2StartTime':0, '2to1StartTime':0}
+            key_new = str(key.ip1).replace('.','') + str(key.port1) + str(key.ip2).replace('.','') + str(key.port2) + str(key.proto)
+            if key_new not in conn_bucket:
+                conn_bucket[key_new] = {'ip1':str(key.ip1), 'port1':str(key.port1), 'ip2':str(key.ip2), 'port2':str(key.port2), 'proto':str(key.proto), '1to2Bytes':0, '2to1Bytes':0, '1to2Packets':0, '2to1Packets':0, '1to2StartTime':0, '2to1StartTime':0}
                 if packet_stats:
-                    conn_bucket[key]['packet_times'] = ''
-                    conn_bucket[key]['packet_size'] = ''
-                    conn_bucket[key]['packet_dir'] = ''
-                    conn_bucket[key]['1to2PacketTimes'] = ''
-                    conn_bucket[key]['1to2PacketSize'] = ''
-                    conn_bucket[key]['2to1PacketTimes'] = ''
-                    conn_bucket[key]['2to1PacketSize'] = ''
+                    conn_bucket[key_new]['packet_times'] = ''
+                    conn_bucket[key_new]['packet_size'] = ''
+                    conn_bucket[key_new]['packet_dir'] = ''
+                    conn_bucket[key_new]['1to2PacketTimes'] = ''
+                    conn_bucket[key_new]['1to2PacketSize'] = ''
+                    conn_bucket[key_new]['2to1PacketTimes'] = ''
+                    conn_bucket[key_new]['2to1PacketSize'] = ''
             if packet_stats:
-                conn_bucket[key]['packet_times'] += str(int((pktts + pktms/1e6)*1000)) + ';'
-                conn_bucket[key]['packet_size'] += str(ip_len) + ';'
+                conn_bucket[key_new]['packet_times'] += str(int((pktts + pktms/1e6)*1000)) + ';'
+                conn_bucket[key_new]['packet_size'] += str(ip_len) + ';'
             if(key.ip1 == src and key.port1 == sport and key.ip2 == dst and
                key.port2 == dport and key.proto == prot):
-                if conn_bucket[key]['1to2Packets'] == 0:
-                    conn_bucket[key]['1to2StartTime'] = ((pktts + pktms/1e6)*1000)
-                conn_bucket[key]['1to2Bytes'] += ip_len
-                conn_bucket[key]['1to2Packets'] += 1
+                if conn_bucket[key_new]['1to2Packets'] == 0:
+                    conn_bucket[key_new]['1to2StartTime'] = ((pktts + pktms/1e6))
+                conn_bucket[key_new]['1to2Bytes'] += ip_len
+                conn_bucket[key_new]['1to2Packets'] += 1
                 if packet_stats:
-                    conn_bucket[key]['1to2PacketTimes'] += str(((pktts + pktms/1e6)*1000) - conn_bucket[key]['1to2StartTime']) + ','
-                    conn_bucket[key]['1to2PacketSize'] += str(ip_len) + ','
-                    conn_bucket[key]['packet_dir'] += "1;"
+                    conn_bucket[key_new]['1to2PacketTimes'] += str(((pktts + pktms/1e6)) - conn_bucket[key_new]['1to2StartTime']) + ','
+                    conn_bucket[key_new]['1to2PacketSize'] += str(ip_len) + ','
+                    conn_bucket[key_new]['packet_dir'] += "1;"
             elif (key.ip2 == src and key.port2 == sport and key.ip1 == dst and
                   key.port1 == dport and key.proto == prot):
-                if conn_bucket[key]['2to1Packets'] == 0:
-                    conn_bucket[key]['2to1StartTime'] = ((pktts + pktms/1e6)*1000)
-                conn_bucket[key]['2to1Bytes'] += ip_len
-                conn_bucket[key]['2to1Packets'] += 1
+                if conn_bucket[key_new]['2to1Packets'] == 0:
+                    conn_bucket[key_new]['2to1StartTime'] = ((pktts + pktms/1e6))
+                conn_bucket[key_new]['2to1Bytes'] += ip_len
+                conn_bucket[key_new]['2to1Packets'] += 1
                 if packet_stats:
-                    conn_bucket[key]['2to1PacketTimes'] += str(((pktts + pktms/1e6)*1000) - conn_bucket[key]['2to1StartTime']) + ','
-                    conn_bucket[key]['2to1PacketSize'] += str(ip_len) + ','
-                    conn_bucket[key]['packet_dir'] += "2;"
+                    conn_bucket[key_new]['2to1PacketTimes'] += str(((pktts + pktms/1e6)) - conn_bucket[key_new]['2to1StartTime']) + ','
+                    conn_bucket[key_new]['2to1PacketSize'] += str(ip_len) + ','
+                    conn_bucket[key_new]['packet_dir'] += "2;"
             else:
                 print("Dictionary returned unexpected key. Searched for: src:" + src + " dst: " +
                       dst + " source port: " + sport + " destination port: " + dport +
