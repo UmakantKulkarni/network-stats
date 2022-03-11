@@ -8,15 +8,20 @@ from argparse import ArgumentParser
 
 company_keywords = ['cisco']
 
+
 def process_pcap(pcap_file):
     IP.payload_guess = []
     input_ip_list = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p)
     output_ip_list = []
-    
+
     url = 'http://ip-api.com/json'
     for ip in input_ip_list:
         if not ipaddress.ip_address(ip).is_private:
-            rsp = requests.get(url = "{}/{}".format(url,ip))
+            rsp = requests.get(url="{}/{}".format(url, ip))
+            try:
+                output = json.loads(rsp.content)
+            except:
+                continue
             output = json.loads(rsp.content)
             for company in company_keywords:
                 isp = output.get('isp')
@@ -35,4 +40,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args_dict = vars(args)
     process_pcap(args_dict['file'])
-
