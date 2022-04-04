@@ -6,14 +6,16 @@ import ipaddress
 from scapy.all import IP, PcapReader
 from argparse import ArgumentParser
 
-company_keywords = ['cisco']
+#company_keywords = ['cisco']
+#company_keywords = ['amazon', 'aws', 'slack']
+company_keywords = ['microsoft', 'azure', 'skype']
 
 
 def process_pcap(pcap_file):
     IP.payload_guess = []
     #input_ip_list = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p)
-    ip_list1 = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p and p[IP].src == "192.169.0.107")
-    ip_list2 = set(p[IP].src for p in PcapReader(pcap_file) if IP in p and p[IP].dst == "192.169.0.107")
+    ip_list1 = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p and p[IP].src == "192.168.0.107")
+    ip_list2 = set(p[IP].src for p in PcapReader(pcap_file) if IP in p and p[IP].dst == "192.168.0.107")
     input_ip_list = ip_list1 + ip_list2
     output_ip_list = []
 
