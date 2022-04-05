@@ -18,7 +18,6 @@ def process_pcap(pcap_file):
     ip_list1 = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p and p[IP].src == my_ip)
     ip_list2 = set(p[IP].src for p in PcapReader(pcap_file) if IP in p and p[IP].dst == my_ip)
     input_ip_list = list(ip_list1) + list(ip_list2)
-    input_ip_list = ip_list1 + ip_list2
     output_ip_list = []
 
     url = 'http://ip-api.com/json'
