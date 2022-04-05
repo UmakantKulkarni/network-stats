@@ -20,7 +20,8 @@ def process_pcap(pcap_file):
     input_ip_list = list(set(list(ip_list1) + list(ip_list2)))
     output_ip_list = []
 
-    url = 'http://ip-api.com/json'
+    #url = 'http://ip-api.com/json'
+    url = 'https://pro.ip-api.com/json'
     for ip in input_ip_list:
         if not ipaddress.ip_address(ip).is_private:
             rsp = requests.get(url="{}/{}".format(url, ip))
