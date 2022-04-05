@@ -9,13 +9,15 @@ from argparse import ArgumentParser
 #company_keywords = ['cisco']
 #company_keywords = ['amazon', 'aws', 'slack']
 company_keywords = ['microsoft', 'azure', 'skype']
+my_ip = "192.168.0.107"
 
 
 def process_pcap(pcap_file):
     IP.payload_guess = []
     #input_ip_list = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p)
-    ip_list1 = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p and p[IP].src == "192.168.0.107")
-    ip_list2 = set(p[IP].src for p in PcapReader(pcap_file) if IP in p and p[IP].dst == "192.168.0.107")
+    ip_list1 = set(p[IP].dst for p in PcapReader(pcap_file) if IP in p and p[IP].src == my_ip)
+    ip_list2 = set(p[IP].src for p in PcapReader(pcap_file) if IP in p and p[IP].dst == my_ip)
+    input_ip_list = list(ip_list1) + list(ip_list2)
     input_ip_list = ip_list1 + ip_list2
     output_ip_list = []
 
@@ -35,7 +37,7 @@ def process_pcap(pcap_file):
                 if (isp != None and company in isp.lower()) or (org != None and company in org.lower()) or (asp != None and company in asp.lower()):
                     print(output)
                     output_ip_list.append(ip)
-    print("IP list is", output_ip_list)
+    print("IP list is", list(set(output_ip_list)))
 
 
 if __name__ == '__main__':
