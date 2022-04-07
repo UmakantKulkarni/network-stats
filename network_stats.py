@@ -16,7 +16,7 @@ import pcapy
 import impacket
 from impacket.IP6 import IP6
 from impacket import ImpactDecoder
-from impacket.ImpactPacket import IP, TCP, UDP
+from impacket.ImpactPacket import TCP, UDP
 import socket
 import subprocess
 import os
@@ -292,7 +292,7 @@ def process_pkts(pktreader, output_cb, live, local_network_addresses, packet_sta
         dst = None
         ip_len = 0
         isAnyIP = False
-        if isinstance(packet,IP):
+        if isinstance(packet,impacket.ImpactPacket.IP):
             prot = packet.get_ip_p()
             src = packet.get_ip_src()
             dst = packet.get_ip_dst()

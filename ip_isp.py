@@ -4,7 +4,11 @@ import os
 import json
 import requests
 import ipaddress
-from scapy.all import IP, PcapReader, UDP
+from scapy.all import IP, PcapReader
+import pcapy
+import impacket
+from impacket import ImpactDecoder
+from impacket.ImpactPacket import UDP
 from argparse import ArgumentParser
 
 company_dict = {"webex": ['cisco', 'webex'], "slack": ['amazon', 'aws', 'slack'], "teams": ['microsoft', 'azure'], "skype": ['microsoft', 'azure', 'skype'], "zoom": ['amazon', 'aws', 'zoom', 'akamai'], "discord": ['Cloudflare', 'i3d', 'discord'], "google": ['google'], "hulu": ['i3d', 'level3', 'hulu']}
@@ -56,14 +60,40 @@ def process_pcap(pcap_file, addnl_ip_list=[]):
                         print(output)
                         output_ip_list.append(ip)
     else:
-        for pkt in PcapReader(pcap_file):
-            if UDP in pkt:
-                if pkt[UDP].sport == 500 and pkt[UDP].dport == 500:
-                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].src)
-                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].dst)
-                elif pkt[UDP].sport == 4500 and pkt[UDP].dport == 4500:
-                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].src)
-                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].dst)
+        pktreader = pcapy.open_offline(pcap_file)
+        decoder = ImpactDecoder.EthDecoder()
+
+        while 1:
+            (pktheader, pktdata) = pktreader.next()
+            if pktheader is None:
+                break
+
+            try:
+                frame = decoder.decode(pktdata)
+                packet = frame.child()
+            except:
+                continue
+
+            src = None
+            dst = None
+            isAnyIP = False
+            if isinstance(packet, impacket.ImpactPacket.IP):
+                src = packet.get_ip_src()
+                dst = packet.get_ip_dst()
+                isAnyIP = True
+            if(isAnyIP):
+                segment = packet.child()
+                sport = 0
+                dport = 0
+                if isinstance(segment, UDP):
+                    sport = segment.get_uh_sport()
+                    dport = segment.get_uh_dport()
+                    if sport == 500 and dport == 500:
+                        output_ip_list = append_ip_tolist(output_ip_list, src)
+                        output_ip_list = append_ip_tolist(output_ip_list, dst)
+                    elif sport == 4500 and dport == 4500:
+                        output_ip_list = append_ip_tolist(output_ip_list, src)
+                        output_ip_list = append_ip_tolist(output_ip_list, dst)
 
     rtrn_list = list(set(output_ip_list)) + addnl_ip_list
     print("")
