@@ -15,6 +15,7 @@ def append_ip_tolist(ip_lst, ip_addr):
     if not ipaddress.ip_address(ip_addr).is_private:
         if ip_addr not in ip_lst:
             ip_lst.append(ip_addr)
+    return ip_lst
 
 
 def process_pcap(pcap_file, addnl_ip_list=[]):
@@ -58,11 +59,11 @@ def process_pcap(pcap_file, addnl_ip_list=[]):
         for pkt in PcapReader(pcap_file):
             if UDP in pkt:
                 if pkt[UDP].sport == 500 and pkt[UDP].dport == 500:
-                    append_ip_tolist(output_ip_list, pkt[IP].src)
-                    append_ip_tolist(output_ip_list, pkt[IP].dst)
+                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].src)
+                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].dst)
                 elif pkt[UDP].sport == 4500 and pkt[UDP].dport == 4500:
-                    append_ip_tolist(output_ip_list, pkt[IP].src)
-                    append_ip_tolist(output_ip_list, pkt[IP].dst)
+                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].src)
+                    output_ip_list = append_ip_tolist(output_ip_list, pkt[IP].dst)
 
     rtrn_list = list(set(output_ip_list)) + addnl_ip_list
     print("")
