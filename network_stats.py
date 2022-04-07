@@ -428,7 +428,7 @@ if __name__ == "__main__":
         #Add header to extended csv file
         init_extfile(args.extcsv)
         #extfile_out takes a filename and returns a callback that will write extended csvs to that file
-        output_cbs.append(extended_out(args.extcsv, os.path.basename(args_dict['pcap'])))
+        output_cbs.append(extended_out(args.extcsv, args_dict['pcap']))
 
 
     if pktreader is not None:
