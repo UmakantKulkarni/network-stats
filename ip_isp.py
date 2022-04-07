@@ -11,7 +11,7 @@ from impacket import ImpactDecoder
 from impacket.ImpactPacket import UDP
 from argparse import ArgumentParser
 
-company_dict = {"webex": ['cisco', 'webex'], "slack": ['amazon', 'aws', 'slack'], "teams": ['microsoft', 'azure'], "skype": ['microsoft', 'azure', 'skype'], "zoom": ['amazon', 'aws', 'zoom', 'akamai'], "discord": ['Cloudflare', 'i3d', 'discord'], "google": ['google'], "hulu": ['i3d', 'level3', 'hulu']}
+company_dict = {"webex": ['cisco', 'webex'], "slack": ['amazon', 'aws', 'slack'], "teams": ['microsoft', 'azure'], "skype": ['microsoft', 'azure', 'skype'], "zoom": ['amazon', 'aws', 'zoom', 'akamai'], "discord": ['cloudflare', 'i3d', 'discord'], "google": ['google'], "hulu": ['i3d', 'level3', 'hulu']}
 my_ip = "192.168.0.107"
 
 
