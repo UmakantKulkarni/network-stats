@@ -37,7 +37,11 @@ def process_pcap(pcap_file):
                 if (isp != None and company in isp.lower()) or (org != None and company in org.lower()) or (asp != None and company in asp.lower()):
                     print(output)
                     output_ip_list.append(ip)
-    print("IP list is", list(set(output_ip_list)))
+    rtrn_list = list(set(output_ip_list))
+    print("")
+    print("IP list for PCAP file {} is ".format(pcap_file), rtrn_list)
+    print("")
+    return rtrn_list
 
 
 if __name__ == '__main__':
