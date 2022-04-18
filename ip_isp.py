@@ -28,9 +28,9 @@ def process_pcap(pcap_file, addnl_ip_list=[]):
     pcap_base_name = os.path.basename(pcap_file)
     if "vpn" not in pcap_base_name:
         for key in company_dict:
-            if pcap_base_name[0:4] == key[0:4]:
+            if pcap_base_name[0:3] == key[0:3]:
                 company_keywords = company_dict[key]
-        if pcap_base_name[0:4] == "skyp":
+        if pcap_base_name[0:3] == "sky":
             addnl_ip_list.append("172.56.12.45")
         else:
             addnl_ip_list = []
