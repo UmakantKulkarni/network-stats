@@ -33,6 +33,8 @@ def process_pcap(pcap_file, addnl_ip_list=[]):
         if pcap_base_name[0:3] == "sky":
             addnl_ip_list.append("172.56.12.45")
             addnl_ip_list.append("172.56.13.113")
+            addnl_ip_list.append("172.20.10.9")
+            addnl_ip_list.append("172.56.12.99")
         else:
             addnl_ip_list = []
 
