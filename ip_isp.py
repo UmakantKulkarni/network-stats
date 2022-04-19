@@ -32,6 +32,7 @@ def process_pcap(pcap_file, addnl_ip_list=[]):
                 company_keywords = company_dict[key]
         if pcap_base_name[0:3] == "sky":
             addnl_ip_list.append("172.56.12.45")
+            addnl_ip_list.append("172.56.13.113")
         else:
             addnl_ip_list = []
 
