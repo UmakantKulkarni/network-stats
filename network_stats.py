@@ -183,7 +183,7 @@ def extended_out(extfile, pcap_filename):
             else:
                 pass
             extfile.write(','.join([
-                str(os.path.basename(str(extfile.name))),
+                str(os.path.basename(str(pcap_filename))),
                 str(bucket[key]['ip1']),
                 str(bucket[key]['port1']),
                 str(bucket[key]['ip2']),
@@ -195,7 +195,7 @@ def extended_out(extfile, pcap_filename):
                 str(bucket[key]['1to2PacketSize']),
             ]) + "\n")
             extfile.write(','.join([
-                str(os.path.basename(str(extfile.name))),
+                str(os.path.basename(str(pcap_filename))),
                 str(bucket[key]['ip2']),
                 str(bucket[key]['port2']),
                 str(bucket[key]['ip1']),
